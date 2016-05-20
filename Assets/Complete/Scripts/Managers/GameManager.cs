@@ -49,6 +49,7 @@ namespace Complete
                 m_Tanks[i].m_PlayerNumber = i + 1;
                 //m_Tanks[i].Map = this.Map;
                 (m_Tanks[i].m_Instance.GetComponent<Mass>()).Attractor = this.Map;
+                ((m_Tanks[i].m_Instance.GetComponent<TankShooting>()).m_Shell.GetComponent<Mass>()).Attractor = this.Map;
                 m_Tanks[i].Setup();
             }
         }

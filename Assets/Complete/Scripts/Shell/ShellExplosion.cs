@@ -5,6 +5,7 @@ namespace Complete
     public class ShellExplosion : MonoBehaviour
     {
         public LayerMask m_TankMask;                        // Used to filter what the explosion affects, this should be set to "Players".
+        public LayerMask m_ObstacleMask;                    // Used to filter what the explosion affects, this should be set to "Obstacles".
         public ParticleSystem m_ExplosionParticles;         // Reference to the particles that will play on explosion.
         public AudioSource m_ExplosionAudio;                // Reference to the audio that will play on explosion.
         public float m_MaxDamage = 100f;                    // The amount of damage done if the explosion is centred on a tank.
@@ -16,40 +17,86 @@ namespace Complete
         private void Start ()
         {
             // If it isn't destroyed by then, destroy the shell after it's lifetime.
-            Destroy (gameObject, m_MaxLifeTime);
+            // Destroy (gameObject, m_MaxLifeTime);
         }
 
-
-        private void OnTriggerEnter (Collider other)
+        void TankCollide(Collider[] tankColliders)
         {
-			// Collect all the colliders in a sphere from the shell's current position to a radius of the explosion radius.
-            Collider[] colliders = Physics.OverlapSphere (transform.position, m_ExplosionRadius, m_TankMask);
-
             // Go through all the colliders...
-            for (int i = 0; i < colliders.Length; i++)
+            for (int i = 0; i < tankColliders.Length; i++)
             {
                 // ... and find their rigidbody.
-                Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody> ();
+                Rigidbody targetRigidbody = tankColliders[i].GetComponent<Rigidbody>();
 
                 // If they don't have a rigidbody, go on to the next collider.
                 if (!targetRigidbody)
                     continue;
 
                 // Add an explosion force.
-                targetRigidbody.AddExplosionForce (m_ExplosionForce, transform.position, m_ExplosionRadius);
+                targetRigidbody.AddExplosionForce(m_ExplosionForce, transform.position, m_ExplosionRadius);
 
                 // Find the TankHealth script associated with the rigidbody.
-                TankHealth targetHealth = targetRigidbody.GetComponent<TankHealth> ();
+                TankHealth targetHealth = targetRigidbody.GetComponent<TankHealth>();
 
                 // If there is no TankHealth script attached to the gameobject, go on to the next collider.
                 if (!targetHealth)
                     continue;
 
                 // Calculate the amount of damage the target should take based on it's distance from the shell.
-                float damage = CalculateDamage (targetRigidbody.position);
+                float damage = CalculateDamage(targetRigidbody.position);
 
                 // Deal this damage to the tank.
-                targetHealth.TakeDamage (damage);
+                targetHealth.TakeDamage(damage);
+            }
+        }
+
+        void ObstacleCollide(Collider[] obstacleColliders)
+        {
+            // Go through all the colliders...
+            for (int i = 0; i < obstacleColliders.Length; i++)
+            {
+                // ... and find their rigidbody.
+                Rigidbody targetRigidbody = obstacleColliders[i].GetComponent<Rigidbody>();
+
+                // If they don't have a rigidbody, go on to the next collider.
+                if (!targetRigidbody)
+                    continue;
+
+                Destroy(targetRigidbody.gameObject);
+
+/*                // Add an explosion force.
+                targetRigidbody.AddExplosionForce(m_ExplosionForce, transform.position, m_ExplosionRadius);
+
+                // Find the TankHealth script associated with the rigidbody.
+                TankHealth targetHealth = targetRigidbody.GetComponent<TankHealth>();
+
+                // If there is no TankHealth script attached to the gameobject, go on to the next collider.
+                if (!targetHealth)
+                    continue;
+
+                // Calculate the amount of damage the target should take based on it's distance from the shell.
+                float damage = CalculateDamage(targetRigidbody.position);
+
+                // Deal this damage to the tank.
+                targetHealth.TakeDamage(damage); */
+            }
+        }
+
+
+        private void OnTriggerEnter (Collider other)
+        {
+			// Collect all the colliders in a sphere from the shell's current position to a radius of the explosion radius.
+            Collider[] tankColliders = Physics.OverlapSphere (transform.position, m_ExplosionRadius, m_TankMask);
+            if(tankColliders.Length != 0)
+            {
+                TankCollide(tankColliders);
+            }
+
+            // Collect all the colliders in a sphere from the shell's current position to a radius of the explosion radius.
+            Collider[] obstacleColliders = Physics.OverlapSphere(transform.position, m_ExplosionRadius, m_ObstacleMask);
+            if (obstacleColliders.Length != 0)
+            {
+                ObstacleCollide(obstacleColliders);
             }
 
             // Unparent the particles from the shell.

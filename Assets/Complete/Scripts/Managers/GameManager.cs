@@ -13,7 +13,7 @@ namespace Complete
         public CameraControl m_CameraControl;       // Reference to the CameraControl script for control during different phases.
         public Text m_MessageText;                  // Reference to the overlay Text to display winning text, etc.
         public GameObject m_TankPrefab;             // Reference to the prefab the players will control.
-        public GravityAttractor Map;
+        public GravityAttractor Ground;
         public TankManager[] m_Tanks;               // A collection of managers for enabling and disabling different aspects of the tanks.
 
         
@@ -46,10 +46,15 @@ namespace Complete
                 // ... create them, set their player number and references needed for control.
                 m_Tanks[i].m_Instance =
                     Instantiate(m_TankPrefab, m_Tanks[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
+                TankShooting tankShooting = m_Tanks[i].m_Instance.GetComponent<TankShooting>();
                 m_Tanks[i].m_PlayerNumber = i + 1;
-                //m_Tanks[i].Map = this.Map;
-                (m_Tanks[i].m_Instance.GetComponent<Mass>()).Attractor = this.Map;
-                ((m_Tanks[i].m_Instance.GetComponent<TankShooting>()).m_Shell.GetComponent<Mass>()).Attractor = this.Map;
+                (m_Tanks[i].m_Instance.GetComponent<Mass>()).Attractor = this.Ground;
+                (tankShooting.m_Shell.GetComponent<Mass>()).Attractor = this.Ground;
+
+                // Abandoned: Code for calculating the speed necessary to put a shot in a uniform circular orbit
+                //float shotRadius = (this.Ground.transform.lossyScale.y / 2.0f + tankShooting.m_FireTransform.position.y);
+                //// tankShooting.m_MaxLaunchForce = shotRadius * Mathf.Sqrt(-this.Ground.Gravity / Mathf.Pow(shotRadius, 3));
+                //tankShooting.m_MaxLaunchForce = shotRadius / 2;
                 m_Tanks[i].Setup();
             }
         }
@@ -69,6 +74,8 @@ namespace Complete
 
             // These are the targets the camera should follow.
             m_CameraControl.m_Targets = targets;
+
+            m_CameraControl.Ground = this.Ground;
         }
 
 

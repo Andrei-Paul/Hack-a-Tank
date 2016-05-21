@@ -92,7 +92,7 @@ namespace Complete
 
             // Set the shell's velocity to the launch force in the fire position's forward direction.
             shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
-            //shellInstance.Attractor = 
+//            shellInstance.velocity = m_MaxLaunchForce * m_FireTransform.forward;
 
             // Change the clip to the firing clip and play it.
             m_ShootingAudio.clip = m_FireClip;

@@ -8,12 +8,17 @@ namespace Complete
         public float m_ScreenEdgeBuffer = 4f;           // Space between the top/bottom most target and the screen edge.
         public float m_MinSize = 6.5f;                  // The smallest orthographic size the camera can be.
         [HideInInspector] public Transform[] m_Targets; // All the targets the camera needs to encompass.
+        [HideInInspector] public GravityAttractor Ground;
 
+        public Vector3 GravityDirection;
+        public float DistanceFromGroundBefore;
+        public float DistanceFromGroundAfter;
 
         private Camera m_Camera;                        // Used for referencing the camera.
         private float m_ZoomSpeed;                      // Reference speed for the smooth damping of the orthographic size.
         private Vector3 m_MoveVelocity;                 // Reference velocity for the smooth damping of the position.
         private Vector3 m_DesiredPosition;              // The position the camera is moving towards.
+        private Quaternion m_DesiredRotation;           // The rotation the camera is moving towards.
 
 
         private void Awake ()
@@ -35,14 +40,18 @@ namespace Complete
         private void Move ()
         {
             // Find the average position of the targets.
-            FindAveragePosition ();
+            FindAveragePositionAndRotation ();
+
+            DistanceFromGroundAfter = (m_DesiredPosition - Ground.transform.position).magnitude;
 
             // Smoothly transition to that position.
             transform.position = Vector3.SmoothDamp(transform.position, m_DesiredPosition, ref m_MoveVelocity, m_DampTime);
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, m_DesiredRotation, m_DampTime);
         }
 
 
-        private void FindAveragePosition ()
+        private void FindAveragePositionAndRotation ()
         {
             Vector3 averagePos = new Vector3 ();
             int numTargets = 0;
@@ -64,10 +73,16 @@ namespace Complete
                 averagePos /= numTargets;
 
             // Keep the same y value.
-            averagePos.y = transform.position.y;
+            // averagePos.y = transform.position.y;
+            // averagePos.y = (averagePos.y - Ground.transform.position.y);
+            DistanceFromGroundBefore = (averagePos - Ground.transform.position).magnitude;
+            GravityDirection = (averagePos - Ground.transform.position).normalized;
+            averagePos = averagePos + GravityDirection * Ground.transform.lossyScale.y;
 
             // The desired position is the average position;
             m_DesiredPosition = averagePos;
+
+            m_DesiredRotation = Quaternion.FromToRotation(transform.forward, -GravityDirection) * transform.rotation;
         }
 
 
@@ -75,7 +90,7 @@ namespace Complete
         {
             // Find the required size based on the desired position and smoothly transition to that size.
             float requiredSize = FindRequiredSize();
-            m_Camera.orthographicSize = Mathf.SmoothDamp (m_Camera.orthographicSize, requiredSize, ref m_ZoomSpeed, m_DampTime);
+            m_Camera.orthographicSize = Mathf.SmoothDamp(m_Camera.orthographicSize, requiredSize, ref m_ZoomSpeed, m_DampTime);
         }
 
 
@@ -120,7 +135,7 @@ namespace Complete
         public void SetStartPositionAndSize ()
         {
             // Find the desired position.
-            FindAveragePosition ();
+            FindAveragePositionAndRotation ();
 
             // Set the camera's position to the desired position without damping.
             transform.position = m_DesiredPosition;

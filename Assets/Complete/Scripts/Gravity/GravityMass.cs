@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Mass : MonoBehaviour
+public class GravityMass : MonoBehaviour
 {
     public GravityAttractor Attractor;
     private Rigidbody Body;

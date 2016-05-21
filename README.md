@@ -1,12 +1,12 @@
 # Hack-a-Tank
-1. Harta Sferica
+1. Harta Sferica							AVEM
 2. Mai multi jucatori
 	- Colaborativ
-	- Competitiv
-	- Local
+	- Competitiv							AVEM
+	- Local									AVEM
 	- Network
 3. Arme
-	- Gloante care urmaresc gravitatia
+	- Gloante care urmaresc gravitatia		AVEM
 	- Range
 	- Damage
 4. Baza de protejat

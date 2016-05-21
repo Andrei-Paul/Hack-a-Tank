@@ -35,7 +35,7 @@ public class TankManager
             renderers[i].material.color = m_PlayerColor;
         }
 
-        m_Instance.GetComponent<Mass>().Attractor = givenAttractor;
+        m_Instance.GetComponent<GravityMass>().Attractor = givenAttractor;
     }
 
 

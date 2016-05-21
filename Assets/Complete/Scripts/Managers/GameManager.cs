@@ -14,6 +14,7 @@ namespace Complete
         public Text m_MessageText;                  // Reference to the overlay Text to display winning text, etc.
         public GameObject m_TankPrefab;             // Reference to the prefab the players will control.
         public GravityAttractor Ground;
+        public ObstacleManager m_Obstacles;
         public TankManager[] m_Tanks;               // A collection of managers for enabling and disabling different aspects of the tanks.
 
         
@@ -30,6 +31,7 @@ namespace Complete
             m_StartWait = new WaitForSeconds (m_StartDelay);
             m_EndWait = new WaitForSeconds (m_EndDelay);
 
+            //Wm_Obstacles.
             SpawnAllTanks();
             SetCameraTargets();
 
@@ -48,8 +50,8 @@ namespace Complete
                     Instantiate(m_TankPrefab, m_Tanks[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
                 TankShooting tankShooting = m_Tanks[i].m_Instance.GetComponent<TankShooting>();
                 m_Tanks[i].m_PlayerNumber = i + 1;
-                (m_Tanks[i].m_Instance.GetComponent<Mass>()).Attractor = this.Ground;
-                (tankShooting.m_Shell.GetComponent<Mass>()).Attractor = this.Ground;
+                (m_Tanks[i].m_Instance.GetComponent<GravityMass>()).Attractor = this.Ground;
+                (tankShooting.m_Shell.GetComponent<GravityMass>()).Attractor = this.Ground;
 
                 // Abandoned: Code for calculating the speed necessary to put a shot in a uniform circular orbit
                 //float shotRadius = (this.Ground.transform.lossyScale.y / 2.0f + tankShooting.m_FireTransform.position.y);

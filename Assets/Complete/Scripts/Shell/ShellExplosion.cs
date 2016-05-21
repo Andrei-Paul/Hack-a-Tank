@@ -56,13 +56,13 @@ namespace Complete
             for (int i = 0; i < obstacleColliders.Length; i++)
             {
                 // ... and find their rigidbody.
-                Rigidbody targetRigidbody = obstacleColliders[i].GetComponent<Rigidbody>();
+                //Rigidbody targetRigidbody = obstacleColliders[i].GetComponent<Rigidbody>();
 
                 // If they don't have a rigidbody, go on to the next collider.
-                if (!targetRigidbody)
-                    continue;
+                //if (!targetRigidbody)
+                //    continue;
 
-                Destroy(targetRigidbody.gameObject);
+                Destroy(obstacleColliders[i].gameObject);
 
 /*                // Add an explosion force.
                 targetRigidbody.AddExplosionForce(m_ExplosionForce, transform.position, m_ExplosionRadius);

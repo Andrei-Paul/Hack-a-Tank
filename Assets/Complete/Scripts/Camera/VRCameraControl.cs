@@ -35,9 +35,9 @@ namespace Complete
             // Change the size of the camera based.
             Zoom ();
 
-            if(m_Camera.GetComponent<GvrViewer>().BackButtonPressed)
+            if(m_Camera.GetComponent<GvrViewer>().Triggered == true)
             {
-                m_Targets[0].GetComponent<TankShooting>().fire();
+                m_Targets[0].GetComponent<TankShooting>().Fire();
             }
         }
 

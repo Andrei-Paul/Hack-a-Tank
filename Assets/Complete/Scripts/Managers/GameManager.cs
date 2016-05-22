@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -74,7 +75,8 @@ namespace Complete
             }
 
             // These are the targets the camera should follow.
-            m_CameraControl.m_Targets = targets;
+            //m_CameraControl.m_Targets = targets; // <-- disabled because network
+            throw new NotImplementedException();
 
             m_CameraControl.Ground = this.Ground;
         }

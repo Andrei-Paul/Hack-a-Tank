@@ -7,8 +7,8 @@ namespace Complete
         public float m_DampTime = 0.2f;                 // Approximate time for the camera to refocus.
         public float m_ScreenEdgeBuffer = 4f;           // Space between the top/bottom most target and the screen edge.
         public float m_MinSize = 6.5f;                  // The smallest orthographic size the camera can be.
-        [HideInInspector] public Transform[] m_Targets; // All the targets the camera needs to encompass.
-        [HideInInspector] public GravityAttractor Ground;
+        [HideInInspector] public GameObject[] m_Targets; // All the targets the camera needs to encompass.
+        public GravityAttractor Ground;
 
         public Vector3 GravityDirection;
         public float DistanceFromGroundBefore;
@@ -19,58 +19,70 @@ namespace Complete
         private Vector3 m_MoveVelocity;                 // Reference velocity for the smooth damping of the position.
         private Vector3 m_DesiredPosition;              // The position the camera is moving towards.
         private Quaternion m_DesiredRotation;           // The rotation the camera is moving towards.
+        private bool Ready = false;
 
 
-        private void Awake ()
+        private void Awake()
         {
-            m_Camera = GetComponentInChildren<Camera> ();
+            m_Camera = GetComponentInChildren<Camera>();
         }
 
 
-        private void FixedUpdate ()
+        private void FixedUpdate()
         {
+            m_Targets = GameObject.FindGameObjectsWithTag("Player");
+
             // Move the camera towards a desired position.
-            //Move ();
+            Move();
 
             // Change the size of the camera based.
-            //Zoom ();
+            Zoom();
         }
 
 
-        private void Move ()
+        private void Move()
         {
             // Find the average position of the targets.
-            FindAveragePositionAndRotation ();
+            FindAveragePositionAndRotation();
 
             DistanceFromGroundAfter = (m_DesiredPosition - Ground.transform.position).magnitude;
 
-            // Smoothly transition to that position.
-            transform.position = Vector3.SmoothDamp(transform.position, m_DesiredPosition, ref m_MoveVelocity, m_DampTime);
+            if (Ready == true)
+            {
+                // Smoothly transition to that position.
+                transform.position = Vector3.SmoothDamp(transform.position, m_DesiredPosition, ref m_MoveVelocity, m_DampTime);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, m_DesiredRotation, m_DampTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, m_DesiredRotation, m_DampTime);
+            }
         }
 
 
-        private void FindAveragePositionAndRotation ()
+        private void FindAveragePositionAndRotation()
         {
-            Vector3 averagePos = new Vector3 ();
+            Vector3 averagePos = new Vector3();
             int numTargets = 0;
 
             // Go through all the targets and add their positions together.
             for (int i = 0; i < m_Targets.Length; i++)
             {
-                // If the target isn't active, go on to the next one.
-                if (!m_Targets[i].gameObject.activeSelf)
-                    continue;
+                if (m_Targets[i] != null)
+                {
+                    // If the target isn't active, go on to the next one.
+                    if (!m_Targets[i].gameObject.activeSelf)
+                        continue;
 
-                // Add to the average and increment the number of targets in the average.
-                averagePos += m_Targets[i].position;
-                numTargets++;
+                    // Add to the average and increment the number of targets in the average.
+                    averagePos += m_Targets[i].transform.position;
+                    numTargets++;
+                }
             }
 
             // If there are targets divide the sum of the positions by the number of them to find the average.
             if (numTargets > 0)
+            {
                 averagePos /= numTargets;
+                Ready = true;
+            }
 
             // Keep the same y value.
             // averagePos.y = transform.position.y;
@@ -86,11 +98,14 @@ namespace Complete
         }
 
 
-        private void Zoom ()
+        private void Zoom()
         {
             // Find the required size based on the desired position and smoothly transition to that size.
             float requiredSize = FindRequiredSize();
-            m_Camera.orthographicSize = Mathf.SmoothDamp(m_Camera.orthographicSize, requiredSize, ref m_ZoomSpeed, m_DampTime);
+            if (Ready == true)
+            {
+                m_Camera.orthographicSize = Mathf.SmoothDamp(m_Camera.orthographicSize, requiredSize, ref m_ZoomSpeed, m_DampTime);
+            }
         }
 
 
@@ -110,7 +125,7 @@ namespace Complete
                     continue;
 
                 // Otherwise, find the position of the target in the camera's local space.
-                Vector3 targetLocalPos = transform.InverseTransformPoint(m_Targets[i].position);
+                Vector3 targetLocalPos = transform.InverseTransformPoint(m_Targets[i].transform.position);
 
                 // Find the position of the target from the desired position of the camera's local space.
                 Vector3 desiredPosToTarget = targetLocalPos - desiredLocalPos;

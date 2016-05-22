@@ -30,10 +30,10 @@ namespace Complete
         private void FixedUpdate ()
         {
             // Move the camera towards a desired position.
-            Move ();
+            //Move ();
 
             // Change the size of the camera based.
-            Zoom ();
+            //Zoom ();
         }
 
 

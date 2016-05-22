@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-//using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -12,15 +12,15 @@ public class GameManager : MonoBehaviour
     public Text m_MessageText;              
     public GameObject m_TankPrefab;
     public GravityAttractor Attractor;
-    public TankManager[] m_Tanks;           
+    public TankManager[] m_Tanks;
 
 
     private int m_RoundNumber;              
     private WaitForSeconds m_StartWait;     
     private WaitForSeconds m_EndWait;       
-/*    private TankManager m_RoundWinner;
+    private TankManager m_RoundWinner;
     private TankManager m_GameWinner;       
-*/
+
 
     private void Start()
     {
@@ -65,15 +65,15 @@ public class GameManager : MonoBehaviour
         yield return StartCoroutine(RoundPlaying());
         yield return StartCoroutine(RoundEnding());
 
-/*        if (m_GameWinner != null)
+        if (m_GameWinner != null)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("PlanetScene");
         }
         else
         {
             StartCoroutine(GameLoop());
         }
-*/    }
+    }
 
 
     private IEnumerator RoundStarting()
@@ -107,7 +107,6 @@ public class GameManager : MonoBehaviour
         return numTanksLeft <= 1;
     }
 
-/*
     private TankManager GetRoundWinner()
     {
         for (int i = 0; i < m_Tanks.Length; i++)
@@ -151,7 +150,7 @@ public class GameManager : MonoBehaviour
 
         return message;
     }
-*/
+
 
     private void ResetAllTanks()
     {

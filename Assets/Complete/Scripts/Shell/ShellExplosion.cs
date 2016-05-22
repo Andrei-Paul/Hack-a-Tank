@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Complete
 {
-    public class ShellExplosion : MonoBehaviour
+    public class ShellExplosion : NetworkBehaviour
     {
         public LayerMask m_TankMask;                        // Used to filter what the explosion affects, this should be set to "Players".
         public LayerMask m_ObstacleMask;                    // Used to filter what the explosion affects, this should be set to "Obstacles".

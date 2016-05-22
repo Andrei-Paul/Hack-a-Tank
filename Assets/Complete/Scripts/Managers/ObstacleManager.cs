@@ -4,7 +4,7 @@ using System.Collections;
 public class ObstacleManager : MonoBehaviour {
     public GameObject[] m_ObstacleTypes;
     public int MinObstacles = 0;
-    public int MaxObstacles = 10;
+    public int MaxObstacles = 20;
     public GravityAttractor Ground;
     private GameObject[] Obstacles;
 
